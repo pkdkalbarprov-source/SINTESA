@@ -1,0 +1,74 @@
+{
+  "name": "SINTESA — Dashboard Terpadu DPMD Kalimantan Barat",
+  "short_name": "SINTESA",
+  "description": "Dashboard terpadu: Dashboard Utama, SANDI DESA, SIPERDIN, SIPEDES KALBAR, dan SIMAK DESA dalam satu aplikasi.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "id": "./index.html",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "any",
+  "background_color": "#fbf3ee",
+  "theme_color": "#3a2c2f",
+  "lang": "id",
+  "dir": "ltr",
+  "categories": ["productivity", "government", "utilities"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard Utama",
+      "short_name": "Dashboard",
+      "url": "./index.html#dashboard",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "SANDI DESA",
+      "short_name": "SANDI DESA",
+      "url": "./index.html#sandi-desa",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "SIPERDIN",
+      "short_name": "SIPERDIN",
+      "url": "./index.html#siperdin",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "SIPEDES KALBAR",
+      "short_name": "SIPEDES",
+      "url": "./index.html#sipedes",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "SIMAK DESA",
+      "short_name": "SIMAK DESA",
+      "url": "./index.html#simak-desa",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ]
+}
