@@ -3,7 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SINTESA — Portal Data Bidang PKD</title>
+<title>SINTESA — Dashboard Terpadu DPMD Kalimantan Barat</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#3a2c2f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SINTESA">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+
 <style>
   :root{
     --coral:#e8697c;
@@ -61,13 +72,23 @@
   }
   .brand .mark{
     width:42px;height:42px;
+    aspect-ratio:1/1;
     border-radius:12px;
     background:linear-gradient(135deg,var(--coral),var(--coral-deep));
     display:flex;align-items:center;justify-content:center;
     font-weight:800;color:#fff;font-size:1rem;
     letter-spacing:.02em;
-    flex:0 0 auto;
+    flex:0 0 42px;
     box-shadow:0 6px 16px -6px rgba(232,105,124,.6);
+    overflow:hidden;
+    padding:6px;
+  }
+  .brand .mark img{
+    width:100%;
+    height:100%;
+    aspect-ratio:1/1;
+    object-fit:contain;
+    display:block;
   }
   .brand .full-name{
     color:#fff;
@@ -101,17 +122,21 @@
   .menu-item{
     display:flex;
     align-items:center;
-    gap:12px;
-    width:100%;
-    padding:11px 12px;
-    border-radius:12px;
+    justify-content:center;
+    gap:0;
+    width:48px;
+    height:48px;
+    margin:0 auto;
+    padding:0;
+    border-radius:14px;
     background:transparent;
     border:none;
     cursor:pointer;
     color:rgba(255,255,255,.68);
     text-align:left;
     position:relative;
-    transition:background .15s ease, color .15s ease;
+    flex:0 0 auto;
+    transition:background .15s ease, color .15s ease, width .18s ease, height .18s ease, padding .18s ease;
   }
   .menu-item:hover{
     background:rgba(255,255,255,.08);
@@ -123,56 +148,90 @@
     box-shadow:0 6px 18px -6px rgba(232,105,124,.55);
   }
   .menu-item .icon{
-    flex:0 0 auto;
+    flex:0 0 22px;
     width:22px;height:22px;
+    aspect-ratio:1/1;
     display:flex;align-items:center;justify-content:center;
-  }
-  .menu-item .icon svg{
-    width:20px;height:20px;
-    stroke:currentColor;
-    fill:none;
-    stroke-width:1.8;
-    stroke-linecap:round;
-    stroke-linejoin:round;
+    background-color:currentColor;
+    -webkit-mask-image:var(--icon-url);
+    mask-image:var(--icon-url);
+    -webkit-mask-repeat:no-repeat;
+    mask-repeat:no-repeat;
+    -webkit-mask-position:center;
+    mask-position:center;
+    -webkit-mask-size:contain;
+    mask-size:contain;
   }
   .menu-item .label{
     font-size:.78rem;
     font-weight:700;
-    white-space:nowrap;
+    white-space:normal;
+    word-break:break-word;
+    line-height:1.25;
     opacity:0;
     max-width:0;
+    flex:1 1 auto;
+    min-width:0;
     overflow:hidden;
     transition:opacity .15s ease;
   }
   #sidebar.expanded .menu-item .label{
     opacity:1;
-    max-width:160px;
+    max-width:100%;
+  }
+  #sidebar.expanded .menu-item{
+    width:100%;
+    height:auto;
+    margin:0;
+    justify-content:flex-start;
+    align-items:flex-start;
+    gap:12px;
+    padding:11px 12px;
+  }
+  #sidebar.expanded .menu-item .icon{
+    margin-top:1px;
   }
 
-  /* tooltip saat sidebar tertutup */
+  /* tooltip melayang saat sidebar tertutup — di-render di body via JS
+     supaya tidak pernah terpotong oleh overflow nav#menu */
   .menu-item .tip{
-    position:absolute;
-    left:calc(100% + 12px);
-    top:50%;
-    transform:translateY(-50%);
+    display:none;
+  }
+  #floatingTip{
+    position:fixed;
     background:#fff;
     color:var(--ink);
-    font-size:.72rem;
-    font-weight:700;
-    padding:7px 12px;
+    padding:9px 13px;
     border-radius:9px;
-    white-space:nowrap;
+    max-width:230px;
     box-shadow:0 12px 26px -8px rgba(0,0,0,.35);
     opacity:0;
     visibility:hidden;
     pointer-events:none;
+    transform:translateY(-50%) translateX(0);
     transition:opacity .15s ease, transform .15s ease;
-    z-index:200;
+    z-index:500;
   }
-  #sidebar:not(.expanded) .menu-item:hover .tip{
+  #floatingTip.show{
     opacity:1;
     visibility:visible;
     transform:translateY(-50%) translateX(4px);
+  }
+  #floatingTip .tip-title{
+    font-size:.76rem;
+    font-weight:800;
+    white-space:normal;
+    word-break:break-word;
+    line-height:1.3;
+  }
+  #floatingTip .tip-desc{
+    font-size:.66rem;
+    font-weight:600;
+    color:rgba(58,44,47,.65);
+    white-space:normal;
+    word-break:break-word;
+    line-height:1.3;
+    margin-top:2px;
   }
 
   #collapseToggle{
@@ -260,7 +319,7 @@
 
   @media (max-width:720px){
     :root{ --sidebar-w:64px; --sidebar-w-expanded:210px; }
-    .brand .mark{ width:36px;height:36px;font-size:.85rem; }
+    .brand .mark{ width:36px;height:36px;flex-basis:36px;font-size:.85rem; }
   }
 </style>
 </head>
@@ -269,18 +328,20 @@
 <div id="app">
   <aside id="sidebar">
     <div class="brand">
-      <div class="mark">SI</div>
+      <div class="mark"><img src="icons/icon-192.png" alt="SINTESA"></div>
       <div class="full-name">SINTESA DPMD KALBAR</div>
     </div>
     <nav id="menu"></nav>
     <button id="collapseToggle" title="Perluas / ciutkan menu">
       <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
-      <span class="clabel">Perluas Menu</span>
+      <span class="clabel"></span>
     </button>
   </aside>
 
   <main id="content"></main>
 </div>
+
+<div id="floatingTip"></div>
 
 <script>
 /* ============================================================
@@ -289,40 +350,52 @@
    Tambah / ubah / hapus modul cukup dengan mengedit array MENU
    di bawah ini. Setiap item butuh:
      - id     : pengenal unik (dipakai untuk state aktif)
-     - label  : nama yang tampil saat sidebar diperluas & tooltip
+     - label  : nama singkat yang tampil di sidebar & judul tooltip
+     - desc   : (opsional) kepanjangan/penjelasan, tampil sebagai
+                subtitle di bawah judul pada tooltip melayang.
+                Kosongkan ('') jika tidak perlu subtitle.
      - src    : path file HTML modul (di folder pages/)
-     - icon   : markup SVG (stroke-based, warna ikut currentColor)
+     - icon   : path file SVG ikon (di folder icons/apps/) — sama
+                seperti logo SINTESA, cukup GANTI FILE-nya di folder
+                icons/apps/ untuk mengubah ikon, tidak perlu sentuh
+                kode ini sama sekali. Warna ikon otomatis mengikuti
+                status menu (normal/hover/aktif).
    ============================================================ */
 const MENU = [
   {
     id: 'dashboard',
     label: 'Dashboard Utama',
+    desc: '',
     src: 'pages/page1.html',
-    icon: `<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>`
+    icon: 'icons/apps/dashboard.svg'
   },
   {
     id: 'sandi-desa',
     label: 'SANDI DESA',
+    desc: 'Sistem Analisis Data dan Indeks Desa',
     src: 'pages/page2.html',
-    icon: `<svg viewBox="0 0 24 24"><path d="M3 12l2-2 4 4L19 4l2 2-12 12-6-6z"/><path d="M3 19h18"/></svg>`
+    icon: 'icons/apps/sandi-desa.svg'
   },
   {
     id: 'siperdin',
     label: 'SIPERDIN',
+    desc: '',
     src: 'pages/page3.html',
-    icon: `<svg viewBox="0 0 24 24"><path d="M4 4h16v4H4z"/><path d="M4 10h10v10H4z"/><path d="M16 10h4v4h-4z"/><path d="M16 16h4v4h-4z"/></svg>`
+    icon: 'icons/apps/siperdin.svg'
   },
   {
     id: 'sipedes',
     label: 'SIPEDES KALBAR',
+    desc: '',
     src: 'pages/page4.html',
-    icon: `<svg viewBox="0 0 24 24"><path d="M12 3l9 6-9 6-9-6 9-6z"/><path d="M3 15l9 6 9-6"/><path d="M3 9v6"/><path d="M21 9v6"/></svg>`
+    icon: 'icons/apps/sipedes.svg'
   },
   {
     id: 'simak-desa',
     label: 'SIMAK DESA',
+    desc: '',
     src: 'pages/page5.html',
-    icon: `<svg viewBox="0 0 24 24"><path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h6"/></svg>`
+    icon: 'icons/apps/simak-desa.svg'
   }
 ];
 
@@ -335,17 +408,37 @@ const collapseBtn = document.getElementById('collapseToggle');
 
 const loadedFrames = new Set();
 
+const floatingTip = document.getElementById('floatingTip');
+
+function showTip(target, title, desc){
+  if (sidebarEl.classList.contains('expanded')) return;
+  const rect = target.getBoundingClientRect();
+  floatingTip.innerHTML = `<div class="tip-title">${title}</div>` +
+    (desc ? `<div class="tip-desc">${desc}</div>` : '');
+  floatingTip.style.left = (rect.right + 12) + 'px';
+  floatingTip.style.top = (rect.top + rect.height / 2) + 'px';
+  floatingTip.classList.add('show');
+}
+
+function hideTip(){
+  floatingTip.classList.remove('show');
+}
+
 function buildMenu(){
   MENU.forEach((item, idx) => {
     const btn = document.createElement('button');
     btn.className = 'menu-item' + (idx === 0 ? ' active' : '');
     btn.dataset.id = item.id;
     btn.innerHTML = `
-      <span class="icon">${item.icon}</span>
+      <span class="icon"></span>
       <span class="label">${item.label}</span>
-      <span class="tip">${item.label}</span>
     `;
+    btn.querySelector('.icon').style.setProperty('--icon-url', `url('${item.icon}')`);
     btn.addEventListener('click', () => activate(item.id));
+    btn.addEventListener('mouseenter', () => showTip(btn, item.label, item.desc));
+    btn.addEventListener('mouseleave', hideTip);
+    btn.addEventListener('focus', () => showTip(btn, item.label, item.desc));
+    btn.addEventListener('blur', hideTip);
     menuEl.appendChild(btn);
 
     const wrap = document.createElement('div');
@@ -371,18 +464,41 @@ function loadFrame(id){
   loadedFrames.add(id);
 }
 
-function activate(id){
+function activate(id, updateHash = true){
   document.querySelectorAll('.menu-item').forEach(b => b.classList.toggle('active', b.dataset.id === id));
   document.querySelectorAll('.frame-wrap').forEach(w => w.classList.toggle('active', w.dataset.id === id));
   loadFrame(id);
+  if (updateHash && location.hash !== '#' + id) {
+    history.replaceState(null, '', '#' + id);
+  }
 }
 
 collapseBtn.addEventListener('click', () => {
   sidebarEl.classList.toggle('expanded');
+  hideTip();
 });
 
 buildMenu();
-loadFrame(MENU[0].id); // muat modul pertama langsung
+
+// buka modul sesuai #hash di URL (dipakai juga oleh shortcut manifest PWA),
+// jika tidak ada / tidak cocok, jatuh kembali ke modul pertama
+const initialId = MENU.find(m => m.id === location.hash.replace('#',''))?.id || MENU[0].id;
+activate(initialId, false);
+
+// dukung tombol back/forward browser antar modul
+window.addEventListener('hashchange', () => {
+  const id = location.hash.replace('#', '');
+  if (MENU.some(m => m.id === id)) activate(id, false);
+});
+
+// daftarkan service worker untuk dukungan offline
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {
+      /* gagal senyap — dashboard tetap jalan normal tanpa offline cache */
+    });
+  });
+}
 </script>
 
 </body>
